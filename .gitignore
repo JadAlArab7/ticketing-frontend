@@ -10,6 +10,7 @@
 # Node modules and dependency files
 /node_modules/
 /package-lock.json
+/Ticketing-FE/package-lock.json
 /yarn.lock
 
 # Environment files
