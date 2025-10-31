@@ -28,7 +28,7 @@ export class AuthService {
       'Content-Type': 'application/json'
     });
 
-    return this.http.post<LoginResponseDto>(`${this.API_BASE_URL}/auth/login`, credentials, { headers })
+    return this.http.post<LoginResponseDto>(`${this.API_BASE_URL}/User/login`, credentials, { headers })
       .pipe(
         tap((response: LoginResponseDto) => {
           // Store token and user data in localStorage
