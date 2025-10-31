@@ -172,8 +172,8 @@ export class TicketService {
     formData.append('ticketStatus', ticketData.ticketStatus);
 
     // Add assignee as simple string
-    if (ticketData.assignee) {
-      formData.append('assignee', ticketData.assignee);
+    if (ticketData.assigneeDepartmentId) {
+      formData.append('assigneeDepartmentId', ticketData.assigneeDepartmentId);
     }
 
     // Add files from base64 data

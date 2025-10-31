@@ -259,7 +259,7 @@ export class TicketFormComponent implements OnInit {
         alertBuffer: formValue.alertBuffer.toISOString(),
         deadline: formValue.deadline.toISOString(),
         ticketStatus: 'open', // Default status - you may want to make this configurable
-        assignee: formValue.assignee, // Simple string ID of the assigned user
+        assigneeDepartmentId: formValue.assignee, // Simple string ID of the assigned user
         files: files
       };
 
