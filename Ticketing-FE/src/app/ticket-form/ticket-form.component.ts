@@ -25,7 +25,8 @@ import {
   TicketResponseDto,
   TicketFormResolverData,
   AttachmentDto,
-  TicketFileDto
+  TicketFileDto,
+  TicketAssigneeDto
 } from '../models/ticket.models';
 
 @Component({
@@ -91,7 +92,7 @@ export class TicketFormComponent implements OnInit {
     this.route.data.subscribe(data => {
       const resolverData: TicketFormResolverData = data['formData'];
       this.types = resolverData.types || [];
-      // Assignees are now loaded dynamically when ticket type is selected
+      this.assignees = resolverData.assignees || []; // Get all assignees from resolver
       
       if (resolverData.ticket) {
         this.isEditMode = true;
@@ -110,38 +111,34 @@ export class TicketFormComponent implements OnInit {
   }
 
   loadAssigneesForType(typeId: string): void {
-    // Find the type name from the types array
-    const selectedType = this.types.find(type => type.id === typeId);
-    if (selectedType) {
-      const typeName = selectedType.name.toLowerCase();
-      this.ticketService.getAssigneesByType(typeName).subscribe({
-        next: (assignees) => {
-          this.assignees = assignees;
-          // Enable the assignee field once type is selected
-          this.ticketForm.get('assignee')?.enable();
-          // Clear the current assignee selection if it's not valid for the new type
-          const currentAssignee = this.ticketForm.get('assignee')?.value;
-          if (currentAssignee && !assignees.find(a => a.id === currentAssignee)) {
-            this.ticketForm.patchValue({ assignee: '' });
-          }
-        },
-        error: (error) => {
-          console.error('Error loading assignees for type:', error);
-        }
-      });
+    if (typeId) {
+      // Enable the assignee field once type is selected
+      // All assignees are already loaded from resolver, so just enable the field
+      this.ticketForm.get('assignee')?.enable();
+      
+      // Clear the current assignee selection to force user to re-select
+      // (since we can't filter by type with current data structure)
+      const currentAssignee = this.ticketForm.get('assignee')?.value;
+      if (currentAssignee && !this.isEditMode) {
+        this.ticketForm.patchValue({ assignee: '' });
+      }
     } else {
       // If no type is selected, disable the assignee field
       this.ticketForm.get('assignee')?.disable();
       this.ticketForm.patchValue({ assignee: '' });
-      this.assignees = [];
     }
   }
 
   loadTicketData(ticket: TicketResponseDto): void {
+    // Extract assignee from assignees array (backend sends array but count is always 1)
+    const assigneeId = ticket.assignees && ticket.assignees.length > 0 
+      ? ticket.assignees[0].departmentId 
+      : '';
+
     this.ticketForm.patchValue({
       type: ticket.ticketTypeId,
       subject: ticket.subject,
-      assignee: ticket.assignee,
+      assignee: assigneeId,
       description: ticket.description,
       alertBuffer: new Date(ticket.alertBuffer),
       deadline: new Date(ticket.deadline)

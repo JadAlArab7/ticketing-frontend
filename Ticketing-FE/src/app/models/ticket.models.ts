@@ -49,7 +49,7 @@ export interface TicketResponseDto {
   alertBuffer: string; // ISO date string
   deadline: string; // ISO date string
   ticketStatus: string;
-  assignee: string; // ID of the assigned user
+  assignees: TicketAssigneeDto[]; // Backend sends array, but count is always 1
   files: TicketFileDto[];
   createdBy: string;
   createdDate: string;
@@ -65,5 +65,6 @@ export interface AttachmentDto {
 
 export interface TicketFormResolverData {
   types: LookupDto[];
+  assignees: LookupDto[]; // All assignees (both report and RFI)
   ticket?: TicketResponseDto; // For edit mode
 }

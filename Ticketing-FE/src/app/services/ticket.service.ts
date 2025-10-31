@@ -78,22 +78,38 @@ export class TicketService {
   }
 
   /**
+   * Get all assignees (both report and RFI users)
+   * @returns Observable of all assignees
+   */
+  getAllAssignees(): Observable<LookupDto[]> {
+    return forkJoin({
+      report: this.getReportUsers(),
+      rfi: this.getRfiUsers()
+    }).pipe(
+      switchMap(result => of([...result.report, ...result.rfi]))
+    );
+  }
+
+  /**
    * Get ticket form data (for resolver)
    * @param ticketId Optional ticket ID for edit mode
    * @returns Observable of form data
    */
   getTicketFormData(ticketId?: string): Observable<TicketFormResolverData> {
     const types$ = this.getTicketTypes();
+    const assignees$ = this.getAllAssignees(); // Get all assignees for the resolver
 
     if (ticketId) {
       const ticket$ = this.getTicketById(ticketId);
       return forkJoin({
         types: types$,
+        assignees: assignees$,
         ticket: ticket$
       });
     } else {
       return forkJoin({
-        types: types$
+        types: types$,
+        assignees: assignees$
       });
     }
   }
