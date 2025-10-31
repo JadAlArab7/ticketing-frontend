@@ -1,0 +1,63 @@
+<div class="home-container">
+  <!-- Navigation Toolbar -->
+  <mat-toolbar color="primary" class="navbar">
+    <button mat-button (click)="navigateToHome()">
+      <mat-icon>home</mat-icon>
+      Home
+    </button>
+    
+    <span class="spacer"></span>
+    
+    @if (currentUser) {
+      <span class="user-info">Welcome, {{ currentUser.username }}!</span>
+    }
+    
+    <button mat-button (click)="onLogout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+  </mat-toolbar>
+
+  <!-- Main Content -->
+  <div class="content">
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title>Dashboard</mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="welcome-section">
+          <h2>Welcome to the Ticketing System</h2>
+          <p>This is your dashboard. You can manage tickets, view reports, and more.</p>
+          
+          @if (currentUser) {
+            <div class="user-details">
+              <h3>Your Profile</h3>
+              <p><strong>Username:</strong> {{ currentUser.username }}</p>
+              <p><strong>Department:</strong> {{ currentUser.departmentName }}</p>
+              <p><strong>Department Type:</strong> {{ currentUser.departmentType }}</p>
+            </div>
+          }
+        </div>
+
+        <div class="quick-actions">
+          <h3>Quick Actions</h3>
+          <div class="action-buttons">
+            <button mat-raised-button color="primary">
+              <mat-icon>add</mat-icon>
+              Create Ticket
+            </button>
+            <button mat-raised-button color="accent">
+              <mat-icon>list</mat-icon>
+              View Tickets
+            </button>
+            <button mat-raised-button>
+              <mat-icon>settings</mat-icon>
+              Settings
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

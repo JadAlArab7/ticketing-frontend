@@ -1,1 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
+// You can add global styles to this file, and also import other style files
+
+// Import Angular Material styles without custom theming
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+// Include all component themes with default theme
+@include mat.all-component-themes(mat.define-theme());
+
+// Global styles
+html, body
+  height: 100%
+  margin: 0
+  padding: 0
+
+body
+  font-family: Roboto, "Helvetica Neue", sans-serif
+
