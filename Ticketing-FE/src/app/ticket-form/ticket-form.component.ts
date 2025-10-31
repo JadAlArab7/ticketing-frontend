@@ -25,8 +25,7 @@ import {
   TicketResponseDto,
   TicketFormResolverData,
   AttachmentDto,
-  TicketFileDto,
-  TicketAssigneeDto
+  TicketFileDto
 } from '../models/ticket.models';
 
 @Component({
@@ -142,7 +141,7 @@ export class TicketFormComponent implements OnInit {
     this.ticketForm.patchValue({
       type: ticket.ticketTypeId,
       subject: ticket.subject,
-      assignee: ticket.assignees.length > 0 ? ticket.assignees[0].departmentId : '',
+      assignee: ticket.assignee,
       description: ticket.description,
       alertBuffer: new Date(ticket.alertBuffer),
       deadline: new Date(ticket.deadline)
@@ -252,13 +251,6 @@ export class TicketFormComponent implements OnInit {
       
       // Convert files to base64 format
       const files = await this.convertFilesToTicketFiles(this.selectedFiles);
-      
-      // Build assignees array - for now, we'll use the selected assignee as a single assignee
-      // You may need to modify this based on your actual requirements
-      const assignees: TicketAssigneeDto[] = formValue.assignee ? [{
-        departmentId: formValue.assignee, // Using assignee ID as department ID for now
-        ticketAssigneeType: formValue.type || 'standard' // You may need to adjust this
-      }] : [];
 
       const ticketData: CreateTicketDto = {
         ticketTypeId: formValue.type,
@@ -267,7 +259,7 @@ export class TicketFormComponent implements OnInit {
         alertBuffer: formValue.alertBuffer.toISOString(),
         deadline: formValue.deadline.toISOString(),
         ticketStatus: 'open', // Default status - you may want to make this configurable
-        assignees: assignees,
+        assignee: formValue.assignee, // Simple string ID of the assigned user
         files: files
       };
 

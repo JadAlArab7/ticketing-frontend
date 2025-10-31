@@ -25,7 +25,7 @@ export interface CreateTicketDto {
   alertBuffer: string; // ISO date string
   deadline: string; // ISO date string
   ticketStatus: string;
-  assignees: TicketAssigneeDto[];
+  assignee: string; // ID of the assigned user
   files: TicketFileDto[];
 }
 
@@ -37,7 +37,7 @@ export interface UpdateTicketDto {
   alertBuffer: string; // ISO date string
   deadline: string; // ISO date string
   ticketStatus: string;
-  assignees: TicketAssigneeDto[];
+  assignee: string; // ID of the assigned user
   files: TicketFileDto[];
 }
 
@@ -49,7 +49,7 @@ export interface TicketResponseDto {
   alertBuffer: string; // ISO date string
   deadline: string; // ISO date string
   ticketStatus: string;
-  assignees: TicketAssigneeDto[];
+  assignee: string; // ID of the assigned user
   files: TicketFileDto[];
   createdBy: string;
   createdDate: string;

@@ -171,9 +171,9 @@ export class TicketService {
     formData.append('deadline', ticketData.deadline);
     formData.append('ticketStatus', ticketData.ticketStatus);
 
-    // Add assignees as JSON string
-    if (ticketData.assignees && ticketData.assignees.length > 0) {
-      formData.append('assignees', JSON.stringify(ticketData.assignees));
+    // Add assignee as simple string
+    if (ticketData.assignee) {
+      formData.append('assignee', ticketData.assignee);
     }
 
     // Add files from base64 data
