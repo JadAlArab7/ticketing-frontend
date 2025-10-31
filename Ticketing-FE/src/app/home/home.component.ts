@@ -5,6 +5,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../services/auth.service.js';
 import { User } from '../models/auth.models';
 
@@ -17,7 +18,8 @@ import { User } from '../models/auth.models';
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    MatTooltipModule
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.sass'
@@ -44,5 +46,13 @@ export class HomeComponent implements OnInit {
 
   navigateToHome(): void {
     this.router.navigate(['/home']);
+  }
+
+  navigateToTicketList(): void {
+    this.router.navigate(['/tickets/list']);
+  }
+
+  navigateToTicketForm(): void {
+    this.router.navigate(['/tickets/form']);
   }
 }

@@ -9,13 +9,22 @@
     <span class="spacer"></span>
     
     @if (currentUser) {
-      <span class="user-info">Welcome, {{ currentUser.username }}!</span>
+      <span class="user-info">{{ currentUser.username }} - {{ currentUser.departmentName }}</span>
     }
     
-    <button mat-button (click)="onLogout()">
-      <mat-icon>logout</mat-icon>
-      Logout
-    </button>
+    <div class="nav-actions">
+      <button mat-icon-button (click)="navigateToTicketList()" matTooltip="View Tickets">
+        <mat-icon>list_alt</mat-icon>
+      </button>
+      
+      <button mat-icon-button (click)="navigateToTicketForm()" matTooltip="Create Ticket">
+        <mat-icon>add_circle</mat-icon>
+      </button>
+      
+      <button mat-icon-button (click)="onLogout()" matTooltip="Logout">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
   </mat-toolbar>
 
   <!-- Main Content -->
@@ -43,11 +52,11 @@
         <div class="quick-actions">
           <h3>Quick Actions</h3>
           <div class="action-buttons">
-            <button mat-raised-button color="primary">
+            <button mat-raised-button color="primary" (click)="navigateToTicketForm()">
               <mat-icon>add</mat-icon>
               Create Ticket
             </button>
-            <button mat-raised-button color="accent">
+            <button mat-raised-button color="accent" (click)="navigateToTicketList()">
               <mat-icon>list</mat-icon>
               View Tickets
             </button>

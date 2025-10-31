@@ -1,0 +1,227 @@
+<div class="ticket-form-container">
+  <!-- Navigation Toolbar -->
+  <mat-toolbar color="primary" class="navbar">
+    <button mat-button (click)="navigateToHome()">
+      <mat-icon>home</mat-icon>
+      Home
+    </button>
+    
+    <span class="spacer"></span>
+    
+    @if (currentUser) {
+      <span class="user-info">{{ currentUser.username }} - {{ currentUser.departmentName }}</span>
+    }
+    
+    <div class="nav-actions">
+      <button mat-icon-button (click)="navigateToTicketList()" matTooltip="View Ticket List">
+        <mat-icon>list_alt</mat-icon>
+      </button>
+      
+      <button mat-icon-button (click)="onLogout()" matTooltip="Logout">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <!-- Main Content -->
+  <div class="content">
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
+          {{ isEditMode ? 'Edit Ticket' : 'Create New Ticket' }}
+        </mat-card-title>
+        <mat-card-subtitle>
+          {{ isEditMode ? 'Update ticket information' : 'Fill in the details to create a new support ticket' }}
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()" class="ticket-form">
+          
+          <!-- Row 1: Type and Subject -->
+          <div class="form-row">
+            <!-- Type Field -->
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Type</mat-label>
+              <mat-select formControlName="type">
+                @for (type of types; track type.id) {
+                  <mat-option [value]="type.id">{{ type.name }}</mat-option>
+                }
+              </mat-select>
+              @if (ticketForm.get('type')?.touched && typeError) {
+                <mat-error>{{ typeError }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Subject Field -->
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Subject</mat-label>
+              <input matInput formControlName="subject" placeholder="Brief description of the issue">
+              @if (ticketForm.get('subject')?.touched && subjectError) {
+                <mat-error>{{ subjectError }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Row 2: Assignee -->
+          <div class="form-row">
+            <!-- Assignee Field -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Assignee</mat-label>
+              <mat-select formControlName="assignee">
+                @for (assignee of assignees; track assignee.id) {
+                  <mat-option [value]="assignee.id">{{ assignee.name }}</mat-option>
+                }
+              </mat-select>
+              @if (ticketForm.get('assignee')?.touched && assigneeError) {
+                <mat-error>{{ assigneeError }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Row 3: Description -->
+          <div class="form-row">
+            <!-- Description Field -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description</mat-label>
+              <textarea 
+                matInput 
+                formControlName="description" 
+                rows="6"
+                placeholder="Provide detailed information about the issue or request">
+              </textarea>
+              @if (ticketForm.get('description')?.touched && descriptionError) {
+                <mat-error>{{ descriptionError }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Row 4: Alert Buffer and Deadline -->
+          <div class="form-row">
+            <!-- Alert Buffer Field -->
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Alert Buffer Date</mat-label>
+              <input matInput [matDatepicker]="alertPicker" formControlName="alertBuffer">
+              <mat-datepicker-toggle matIconSuffix [for]="alertPicker"></mat-datepicker-toggle>
+              <mat-datepicker #alertPicker></mat-datepicker>
+              @if (ticketForm.get('alertBuffer')?.touched && alertBufferError) {
+                <mat-error>{{ alertBufferError }}</mat-error>
+              }
+            </mat-form-field>
+
+            <!-- Deadline Field -->
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Deadline</mat-label>
+              <input matInput [matDatepicker]="deadlinePicker" formControlName="deadline">
+              <mat-datepicker-toggle matIconSuffix [for]="deadlinePicker"></mat-datepicker-toggle>
+              <mat-datepicker #deadlinePicker></mat-datepicker>
+              @if (ticketForm.get('deadline')?.touched && deadlineError) {
+                <mat-error>{{ deadlineError }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Row 5: Attachments -->
+          <div class="form-row">
+            <div class="attachments-section">
+              <h4>Attachments</h4>
+              
+              <!-- File Upload -->
+              <div class="file-upload">
+                <input 
+                  type="file" 
+                  (change)="onFileSelected($event)" 
+                  multiple 
+                  #fileInput 
+                  id="fileInput"
+                  style="display: none;">
+                <button 
+                  type="button" 
+                  mat-stroked-button 
+                  (click)="fileInput.click()">
+                  <mat-icon>attach_file</mat-icon>
+                  Choose Files
+                </button>
+              </div>
+
+              <!-- Selected Files -->
+              @if (selectedFiles.length > 0) {
+                <div class="selected-files">
+                  <h5>New Attachments:</h5>
+                  @for (file of selectedFiles; track $index) {
+                    <mat-chip-row (removed)="removeFile($index)">
+                      <mat-icon matChipAvatar>insert_drive_file</mat-icon>
+                      {{ file.name }} ({{ formatFileSize(file.size) }})
+                      <button matChipRemove>
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </mat-chip-row>
+                  }
+                </div>
+              }
+
+              <!-- Existing Attachments (Edit Mode) -->
+              @if (isEditMode && existingFiles.length > 0) {
+                <div class="existing-attachments">
+                  <h5>Existing Attachments:</h5>
+                  @for (file of existingFiles; track file.fileName) {
+                    <mat-chip-row (removed)="removeExistingAttachment(file.fileName)">
+                      <mat-icon matChipAvatar>insert_drive_file</mat-icon>
+                      {{ file.fileName }}
+                      <button mat-icon-button (click)="downloadAttachment(file)" matTooltip="Download">
+                        <mat-icon>download</mat-icon>
+                      </button>
+                      <button matChipRemove>
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    </mat-chip-row>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- User Information (Read-only) -->
+          @if (currentUser) {
+            <div class="user-info-section">
+              <h4>Ticket Information</h4>
+              <div class="info-row">
+                <span class="label">Submitted by:</span>
+                <span class="value">{{ currentUser.username }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">Department:</span>
+                <span class="value">{{ currentUser.departmentName }} ({{ currentUser.departmentType }})</span>
+              </div>
+            </div>
+          }
+
+          <!-- Action Buttons -->
+          <div class="form-actions">
+            <button 
+              type="button" 
+              mat-stroked-button 
+              (click)="onCancel()"
+              [disabled]="isLoading">
+              Cancel
+            </button>
+            
+            <button 
+              type="submit" 
+              mat-raised-button 
+              color="primary"
+              [disabled]="ticketForm.invalid || isLoading">
+              @if (isLoading) {
+                <mat-spinner diameter="20"></mat-spinner>
+              } @else {
+                <mat-icon>{{ isEditMode ? 'save' : 'send' }}</mat-icon>
+              }
+              {{ isEditMode ? 'Update Ticket' : 'Submit Ticket' }}
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
