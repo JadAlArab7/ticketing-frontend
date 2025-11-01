@@ -11,7 +11,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { TicketService } from '../services/ticket.service';
 import { User } from '../models/auth.models';
-import { TicketResponseDto, TicketListItemDto, TicketStatusHelpers } from '../models/ticket.models';
+import { TicketListItemDto } from '../models/ticket.models';
 
 @Component({
   selector: 'app-ticket-list',
@@ -33,6 +33,18 @@ export class TicketListComponent implements OnInit {
   currentUser: User | null = null;
   tickets: TicketListItemDto[] = [];
   displayedColumns: string[] = ['subject', 'type', 'department', 'assignee', 'status', 'deadline', 'actions'];
+  private readonly statusClassMap: Record<string, string> = {
+    'new': 'status-new',
+    'in progress': 'status-in-progress',
+    'resolved': 'status-resolved',
+    'closed': 'status-closed',
+    'rejected': 'status-rejected'
+  };
+
+  private readonly typeClassMap: Record<string, string> = {
+    'rfi': 'type-rfi',
+    'report': 'type-report'
+  };
 
   constructor(
     private authService: AuthService,
@@ -119,8 +131,20 @@ export class TicketListComponent implements OnInit {
       : 'Not assigned';
   }
 
-  getStatusColor(status: string): string {
-    return TicketStatusHelpers.getStatusColor(status);
+  getStatusClass(status: string | null | undefined): string {
+    if (!status) {
+      return 'status-default';
+    }
+    const normalized = status.trim().toLowerCase();
+    return this.statusClassMap[normalized] ?? 'status-default';
+  }
+
+  getTypeClass(type: string | null | undefined): string {
+    if (!type) {
+      return 'type-default';
+    }
+    const normalized = type.trim().toLowerCase();
+    return this.typeClassMap[normalized] ?? 'type-default';
   }
 
   formatDate(dateString: string): Date {

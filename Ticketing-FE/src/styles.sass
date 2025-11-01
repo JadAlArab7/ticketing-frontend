@@ -9,6 +9,18 @@
 @include mat.all-component-themes(mat.define-theme());
 
 // Global styles
+$primary-color: #383e30
+$accent-color: #708238
+$text-light: #ffffff
+$surface-color: #f5f5ef
+
+:root
+  --primary-color: #383e30
+  --accent-color: #708238
+  --text-light: #ffffff
+  --surface-color: #f5f5ef
+  --shadow-color: rgba(0, 0, 0, 0.12)
+
 html, body
   height: 100%
   margin: 0
@@ -16,4 +28,212 @@ html, body
 
 body
   font-family: Roboto, "Helvetica Neue", sans-serif
+  background-color: var(--surface-color)
+  color: #1f2218
+
+a
+  color: $accent-color
+  text-decoration: none
+
+  &:hover,
+  &:focus
+    color: #5d6c2b
+
+.mat-toolbar
+  background-color: $primary-color !important
+  color: $text-light !important
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18)
+  transition: background-color 0.3s ease, box-shadow 0.3s ease
+
+.mat-toolbar button,
+.mat-toolbar .mat-icon-button
+  color: $text-light
+  transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.3s ease
+
+  &:hover,
+  &:focus-visible
+    transform: translateY(-1px) scale(1.02)
+    opacity: 0.9
+    background-color: rgba(255, 255, 255, 0.12)
+
+.mat-toolbar .mat-icon
+  color: $text-light
+
+.mat-icon
+  color: inherit
+
+.mat-mdc-table .mat-mdc-header-row,
+.mat-table .mat-header-row
+  background-color: $primary-color
+  animation: fadeInDown 0.4s ease forwards
+
+.mat-mdc-table .mat-mdc-header-cell,
+.mat-table .mat-header-cell
+  background-color: $primary-color
+  color: $text-light
+  font-weight: 600
+  letter-spacing: 0.02em
+
+.mat-mdc-table .mat-mdc-row,
+.mat-table .mat-row
+  opacity: 0
+  animation: fadeInUp 0.45s ease forwards
+  animation-delay: 0.12s
+  transition: background-color 0.3s ease
+
+.mat-mdc-table .mat-mdc-row:hover,
+.mat-table .mat-row:hover
+  background-color: rgba(56, 62, 48, 0.08)
+
+.mat-mdc-table .mat-mdc-cell,
+.mat-table .mat-cell
+  border-bottom-color: rgba(56, 62, 48, 0.1)
+
+button.mat-button,
+button.mat-raised-button,
+button.mat-flat-button,
+button.mat-stroked-button,
+a.mat-button,
+a.mat-raised-button,
+a.mat-flat-button,
+a.mat-stroked-button,
+.mat-icon-button
+  transition: color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease
+
+button.mat-raised-button[color="primary"]:hover,
+button.mat-raised-button[color="primary"]:focus-visible,
+button.mat-flat-button[color="primary"]:hover,
+button.mat-flat-button[color="primary"]:focus-visible,
+button.mat-stroked-button[color="primary"]:hover,
+button.mat-stroked-button[color="primary"]:focus-visible,
+button.mat-button[color="primary"]:hover,
+button.mat-button[color="primary"]:focus-visible,
+button.mat-raised-button[color="accent"]:hover,
+button.mat-raised-button[color="accent"]:focus-visible,
+button.mat-flat-button[color="accent"]:hover,
+button.mat-flat-button[color="accent"]:focus-visible
+  background-color: $accent-color !important
+  color: $text-light !important
+  transform: translateY(-1px)
+  box-shadow: 0 6px 16px rgba(56, 62, 48, 0.25)
+
+button.mat-stroked-button[color="primary"]:hover,
+button.mat-stroked-button[color="primary"]:focus-visible
+  border-color: $accent-color !important
+
+.mat-icon-button:not(.mat-disabled):hover,
+.mat-icon-button:not(.mat-disabled):focus-visible
+  color: $accent-color
+  background-color: rgba(56, 62, 48, 0.12)
+
+.navbar
+  background-color: $primary-color
+  color: $text-light
+
+.mat-mdc-standard-chip.status-chip,
+.mat-mdc-standard-chip.type-chip
+  --mdc-chip-outline-width: 1px
+  text-transform: uppercase
+  font-weight: 600
+  letter-spacing: 0.04em
+  padding: 0 12px
+  transition: transform 0.3s ease, box-shadow 0.3s ease
+
+.status-chip:hover,
+.status-chip:focus-visible,
+.type-chip:hover,
+.type-chip:focus-visible
+  transform: translateY(-1px)
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2)
+
+.status-chip
+  --mdc-chip-container-color: rgba(56, 62, 48, 0.12)
+  --mdc-chip-elevated-container-color: rgba(56, 62, 48, 0.12)
+  --mdc-chip-label-text-color: var(--primary-color)
+  --mdc-chip-outline-color: rgba(56, 62, 48, 0.28)
+
+.status-new
+  --mdc-chip-container-color: rgba(#3498db, 0.18)
+  --mdc-chip-elevated-container-color: rgba(#3498db, 0.18)
+  --mdc-chip-label-text-color: #1f4f7a
+  --mdc-chip-outline-color: rgba(#3498db, 0.35)
+
+.status-in-progress
+  --mdc-chip-container-color: rgba(#f1c40f, 0.24)
+  --mdc-chip-elevated-container-color: rgba(#f1c40f, 0.24)
+  --mdc-chip-label-text-color: #7a660a
+  --mdc-chip-outline-color: rgba(#f1c40f, 0.35)
+
+.status-resolved
+  --mdc-chip-container-color: rgba(#2ecc71, 0.2)
+  --mdc-chip-elevated-container-color: rgba(#2ecc71, 0.2)
+  --mdc-chip-label-text-color: #1e6b3a
+  --mdc-chip-outline-color: rgba(#2ecc71, 0.32)
+
+.status-closed
+  --mdc-chip-container-color: rgba(#7f8c8d, 0.22)
+  --mdc-chip-elevated-container-color: rgba(#7f8c8d, 0.22)
+  --mdc-chip-label-text-color: #445052
+  --mdc-chip-outline-color: rgba(#7f8c8d, 0.32)
+
+.status-rejected
+  --mdc-chip-container-color: rgba(#e74c3c, 0.22)
+  --mdc-chip-elevated-container-color: rgba(#e74c3c, 0.22)
+  --mdc-chip-label-text-color: #7f231b
+  --mdc-chip-outline-color: rgba(#e74c3c, 0.3)
+
+.status-default
+  --mdc-chip-container-color: rgba(56, 62, 48, 0.16)
+  --mdc-chip-elevated-container-color: rgba(56, 62, 48, 0.16)
+  --mdc-chip-label-text-color: var(--primary-color)
+  --mdc-chip-outline-color: rgba(56, 62, 48, 0.28)
+
+.type-chip
+  --mdc-chip-container-color: rgba(56, 62, 48, 0.12)
+  --mdc-chip-elevated-container-color: rgba(56, 62, 48, 0.12)
+  --mdc-chip-label-text-color: var(--primary-color)
+  --mdc-chip-outline-color: rgba(56, 62, 48, 0.28)
+
+.type-rfi
+  --mdc-chip-container-color: rgba(#9b59b6, 0.22)
+  --mdc-chip-elevated-container-color: rgba(#9b59b6, 0.22)
+  --mdc-chip-label-text-color: #5e2c7a
+  --mdc-chip-outline-color: rgba(#9b59b6, 0.32)
+
+.type-report
+  --mdc-chip-container-color: rgba(#16a085, 0.22)
+  --mdc-chip-elevated-container-color: rgba(#16a085, 0.22)
+  --mdc-chip-label-text-color: #0c5c4d
+  --mdc-chip-outline-color: rgba(#16a085, 0.32)
+
+.type-default
+  --mdc-chip-container-color: rgba(56, 62, 48, 0.16)
+  --mdc-chip-elevated-container-color: rgba(56, 62, 48, 0.16)
+  --mdc-chip-label-text-color: var(--primary-color)
+  --mdc-chip-outline-color: rgba(56, 62, 48, 0.28)
+
+@keyframes fadeInDown
+  from
+    opacity: 0
+    transform: translateY(-8px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+@keyframes fadeInUp
+  from
+    opacity: 0
+    transform: translateY(8px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+@media (prefers-reduced-motion: reduce)
+  *,
+  *::before,
+  *::after
+    animation-duration: 0.01ms !important
+    animation-iteration-count: 1 !important
+    transition-duration: 0.01ms !important
+    scroll-behavior: auto !important
 

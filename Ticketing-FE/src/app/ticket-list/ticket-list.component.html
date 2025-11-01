@@ -47,7 +47,11 @@
               <!-- Type Column -->
               <ng-container matColumnDef="type">
                 <th mat-header-cell *matHeaderCellDef>Type</th>
-                <td mat-cell *matCellDef="let ticket">{{ ticket.ticketTypeName }}</td>
+                <td mat-cell *matCellDef="let ticket">
+                  <mat-chip class="type-chip" [ngClass]="getTypeClass(ticket.ticketTypeName)">
+                    {{ ticket.ticketTypeName }}
+                  </mat-chip>
+                </td>
               </ng-container>
 
               <!-- Department Column -->
@@ -66,7 +70,7 @@
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>Status</th>
                 <td mat-cell *matCellDef="let ticket">
-                  <mat-chip [color]="getStatusColor(ticket.ticketStatusName)">
+                  <mat-chip class="status-chip" [ngClass]="getStatusClass(ticket.ticketStatusName)">
                     {{ ticket.ticketStatusName }}
                   </mat-chip>
                 </td>

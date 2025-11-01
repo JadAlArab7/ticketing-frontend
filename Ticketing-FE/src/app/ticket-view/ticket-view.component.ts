@@ -14,7 +14,7 @@ import { AuthService } from '../services/auth.service';
 import { TicketService } from '../services/ticket.service';
 import { TicketStatusService } from '../services/ticket-status.service';
 import { User } from '../models/auth.models';
-import { TicketResponseDto, TicketStatusHelpers, TicketStatus, UpdateTicketDto } from '../models/ticket.models';
+import { TicketResponseDto, TicketStatusHelpers, TicketStatus } from '../models/ticket.models';
 
 @Component({
   selector: 'app-ticket-view',
@@ -38,6 +38,23 @@ export class TicketViewComponent implements OnInit {
   currentUser: User | null = null;
   ticket: TicketResponseDto | null = null;
   ticketId: string = '';
+  private readonly statusClassMap: Record<string, string> = {
+    'new': 'status-new',
+    'in progress': 'status-in-progress',
+    'resolved': 'status-resolved',
+    'closed': 'status-closed',
+    'rejected': 'status-rejected',
+    'draft': 'status-new',
+    'pending': 'status-in-progress',
+    'in review': 'status-in-progress',
+    'need revision': 'status-rejected',
+    'completed': 'status-resolved'
+  };
+
+  private readonly typeClassMap: Record<string, string> = {
+    'rfi': 'type-rfi',
+    'report': 'type-report'
+  };
 
   constructor(
     private authService: AuthService,
@@ -152,10 +169,6 @@ export class TicketViewComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 
-  getStatusColor(status: string): string {
-    return TicketStatusHelpers.getStatusColor(status);
-  }
-
   getStatusIcon(status: string): string {
     const iconMap: { [key: string]: string } = {
       'Draft': 'edit',
@@ -166,6 +179,22 @@ export class TicketViewComponent implements OnInit {
       'Completed': 'check_circle'
     };
     return iconMap[status] || 'radio_button_unchecked';
+  }
+
+  getStatusClass(status: string | null | undefined): string {
+    if (!status) {
+      return 'status-default';
+    }
+    const normalized = status.trim().toLowerCase();
+    return this.statusClassMap[normalized] ?? 'status-default';
+  }
+
+  getTypeClass(type: string | null | undefined): string {
+    if (!type) {
+      return 'type-default';
+    }
+    const normalized = type.trim().toLowerCase();
+    return this.typeClassMap[normalized] ?? 'type-default';
   }
 
   formatDate(dateString: string): Date | null {

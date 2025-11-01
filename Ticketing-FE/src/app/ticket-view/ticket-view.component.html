@@ -54,7 +54,7 @@
                 <div class="detail-item full-width">
                   <label>Status:</label>
                   <div class="status-section">
-                    <mat-chip>
+                    <mat-chip class="status-chip" [ngClass]="getStatusClass(ticket.ticketStatusName)">
                       {{ ticket.ticketStatusName }}
                     </mat-chip>
                     @if (canChangeStatus() && getAvailableStatusTransitions().length > 0) {
@@ -84,7 +84,11 @@
               <div class="detail-row">
                 <div class="detail-item">
                   <label>Type:</label>
-                  <span class="detail-value">{{ ticket.ticketTypeName }}</span>
+                  <span class="detail-value">
+                    <mat-chip class="type-chip" [ngClass]="getTypeClass(ticket.ticketTypeName)">
+                      {{ ticket.ticketTypeName }}
+                    </mat-chip>
+                  </span>
                 </div>
                 <div class="detail-item">
                   <label>Assignee:</label>
