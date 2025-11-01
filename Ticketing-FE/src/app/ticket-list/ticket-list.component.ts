@@ -11,7 +11,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { TicketService } from '../services/ticket.service';
 import { User } from '../models/auth.models';
-import { TicketResponseDto } from '../models/ticket.models';
+import { TicketResponseDto, TicketListItemDto, TicketStatusHelpers } from '../models/ticket.models';
 
 @Component({
   selector: 'app-ticket-list',
@@ -31,8 +31,8 @@ import { TicketResponseDto } from '../models/ticket.models';
 })
 export class TicketListComponent implements OnInit {
   currentUser: User | null = null;
-  tickets: TicketResponseDto[] = [];
-  displayedColumns: string[] = ['id', 'subject', 'type', 'assignee', 'status', 'deadline', 'actions'];
+  tickets: TicketListItemDto[] = [];
+  displayedColumns: string[] = ['subject', 'type', 'department', 'assignee', 'status', 'deadline', 'actions'];
 
   constructor(
     private authService: AuthService,
@@ -54,15 +54,26 @@ export class TicketListComponent implements OnInit {
     this.router.navigate(['/tickets/form']);
   }
 
-  onViewTicket(ticket: TicketResponseDto): void {
+  onRowClick(ticket: TicketListItemDto): void {
+    // Navigate to view mode when clicking on a row
+    this.router.navigate(['/tickets/view', ticket.id]);
+  }
+
+  onViewTicket(ticket: TicketListItemDto, event?: Event): void {
+    // Prevent event bubbling when clicking the action button
+    event?.stopPropagation();
+    this.router.navigate(['/tickets/view', ticket.id]);
+  }
+
+  onEditTicket(ticket: TicketListItemDto, event?: Event): void {
+    // Prevent event bubbling when clicking the action button
+    event?.stopPropagation();
     this.router.navigate(['/tickets/form'], { queryParams: { id: ticket.id } });
   }
 
-  onEditTicket(ticket: TicketResponseDto): void {
-    this.router.navigate(['/tickets/form'], { queryParams: { id: ticket.id } });
-  }
-
-  onDeleteTicket(ticket: TicketResponseDto): void {
+  onDeleteTicket(ticket: TicketListItemDto, event?: Event): void {
+    // Prevent event bubbling when clicking the action button
+    event?.stopPropagation();
     if (confirm(`Are you sure you want to delete ticket "${ticket.subject}"?`)) {
       // Use real API call now
       this.ticketService.deleteTicket(ticket.id).subscribe({
@@ -101,13 +112,15 @@ export class TicketListComponent implements OnInit {
     this.router.navigate(['/home']);
   }
 
+  getAssignee(ticket: TicketListItemDto): string {
+    // Always take assignedToDepartments[0] for assignee
+    return ticket.assignedToDepartments && ticket.assignedToDepartments.length > 0 
+      ? ticket.assignedToDepartments[0] 
+      : 'Not assigned';
+  }
+
   getStatusColor(status: string): string {
-    switch (status?.toLowerCase()) {
-      case 'open': return 'warn';
-      case 'in progress': return 'accent';
-      case 'closed': return 'primary';
-      default: return '';
-    }
+    return TicketStatusHelpers.getStatusColor(status);
   }
 
   formatDate(dateString: string): Date {

@@ -1,0 +1,202 @@
+<div class="ticket-view-container">
+  <!-- Navigation Toolbar -->
+  <mat-toolbar color="primary" class="navbar">
+    <button mat-button (click)="navigateToHome()">
+      <mat-icon>home</mat-icon>
+      Home
+    </button>
+    
+    <span class="spacer"></span>
+    
+    @if (currentUser) {
+      <span class="user-info">{{ currentUser.username }} - {{ currentUser.departmentName }}</span>
+    }
+    
+    <div class="nav-actions">
+      @if (canEditTicket()) {
+        <button mat-icon-button (click)="onEditTicket()" matTooltip="Edit Ticket">
+          <mat-icon>edit</mat-icon>
+        </button>
+      }
+      
+      <button mat-icon-button (click)="onBackToList()" matTooltip="Back to Ticket List">
+        <mat-icon>list_alt</mat-icon>
+      </button>
+      
+      <button mat-icon-button (click)="onLogout()" matTooltip="Logout">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <!-- Main Content -->
+  <div class="content">
+    @if (ticket) {
+      <mat-card class="ticket-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>visibility</mat-icon>
+            Ticket Details
+          </mat-card-title>
+          <mat-card-subtitle>View ticket information</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <!-- Ticket Information -->
+          <div class="ticket-details">
+            <!-- Header Section -->
+            <div class="detail-section">
+              <div class="detail-row">
+                <div class="detail-item">
+                  <label>Subject:</label>
+                  <span class="detail-value">{{ ticket.subject }}</span>
+                </div>
+                <div class="detail-item full-width">
+                  <label>Status:</label>
+                  <div class="status-section">
+                    <mat-chip>
+                      {{ ticket.ticketStatusName }}
+                    </mat-chip>
+                    @if (canChangeStatus() && getAvailableStatusTransitions().length > 0) {
+                      <div class="status-actions">
+                        @for (statusOption of getAvailableStatusTransitions(); track statusOption.value) {
+                          <button 
+                            mat-raised-button 
+                            [color]="statusOption.color"
+                            (click)="onStatusChange(statusOption.statusId, statusOption.label)"
+                            [matTooltip]="'Change status to ' + statusOption.label"
+                            class="status-action-button">
+                            <mat-icon>{{ getStatusIcon(statusOption.value) }}</mat-icon>
+                            {{ statusOption.actionLabel }}
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Details Section -->
+            <div class="detail-section">
+              <div class="detail-row">
+                <div class="detail-item">
+                  <label>Type:</label>
+                  <span class="detail-value">{{ ticket.ticketTypeName }}</span>
+                </div>
+                <div class="detail-item">
+                  <label>Assignee:</label>
+                  <span class="detail-value">{{ ticket.assignees && ticket.assignees.length > 0 ? ticket.assignees[0].departmentName : 'Not assigned' }}</span>
+                </div>
+              </div>
+              
+              <div class="detail-row">
+                <div class="detail-item">
+                  <label>Created By Department:</label>
+                  <span class="detail-value">{{ ticket.createdByDepartmentName }}</span>
+                </div>
+                <div class="detail-item">
+                  <label>Created Date:</label>
+                  <span class="detail-value">
+                    @if (formatDate(ticket.createdAt)) {
+                      {{ formatDate(ticket.createdAt) | date:'medium' }}
+                    } @else {
+                      Not specified
+                    }
+                  </span>
+                </div>
+              </div>
+
+              <div class="detail-row">
+                <div class="detail-item">
+                  <label>Alert Buffer:</label>
+                  <span class="detail-value">
+                    @if (formatDate(ticket.alertBuffer)) {
+                      {{ formatDate(ticket.alertBuffer) | date:'medium' }}
+                    } @else {
+                      Not specified
+                    }
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <label>Deadline:</label>
+                  <span class="detail-value">
+                    @if (formatDate(ticket.deadline)) {
+                      {{ formatDate(ticket.deadline) | date:'medium' }}
+                    } @else {
+                      Not specified
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Description Section -->
+            <div class="detail-section">
+              <div class="detail-item full-width">
+                <label>Description:</label>
+                <div class="description-content">
+                  {{ ticket.description }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Files Section -->
+            @if (ticket.files && ticket.files.length > 0) {
+              <mat-divider></mat-divider>
+              <div class="detail-section">
+                <div class="detail-item full-width">
+                  <label>Attachments:</label>
+                  <div class="files-list">
+                    @for (file of ticket.files; track file.fileName) {
+                      <div class="file-item">
+                        <mat-icon>attach_file</mat-icon>
+                        <span class="file-name">{{ file.fileName }}</span>
+                        <button mat-icon-button (click)="downloadFile(file)" matTooltip="Download">
+                          <mat-icon>download</mat-icon>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <div class="card-actions">
+            <button mat-button (click)="onBackToList()">
+              <mat-icon>arrow_back</mat-icon>
+              Back to List
+            </button>
+            
+            <div class="action-buttons">
+              <button mat-raised-button color="primary" (click)="onEditTicket()">
+                <mat-icon>edit</mat-icon>
+                Edit Ticket
+              </button>
+            </div>
+          </div>
+        </mat-card-actions>
+      </mat-card>
+    } @else {
+      <mat-card>
+        <mat-card-content>
+          <div class="error-content">
+            <mat-icon class="error-icon">error</mat-icon>
+            <h3>Ticket Not Found</h3>
+            <p>The requested ticket could not be found.</p>
+            <button mat-raised-button color="primary" (click)="onBackToList()">
+              Back to List
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+</div>

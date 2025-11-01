@@ -28,11 +28,11 @@
     <mat-card class="form-card">
       <mat-card-header>
         <mat-card-title>
-          <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
-          {{ isEditMode ? 'Edit Ticket' : 'Create New Ticket' }}
+          <mat-icon>{{ isFormDisabled ? 'visibility' : (isEditMode ? 'edit' : 'add_circle') }}</mat-icon>
+          {{ isFormDisabled ? 'View Ticket (Read Only)' : (isEditMode ? 'Edit Ticket' : 'Create New Ticket') }}
         </mat-card-title>
         <mat-card-subtitle>
-          {{ isEditMode ? 'Update ticket information' : 'Fill in the details to create a new support ticket' }}
+          {{ isFormDisabled ? 'You can only view this ticket. Only the creator department can edit tickets.' : (isEditMode ? 'Update ticket information' : 'Fill in the details to create a new support ticket') }}
         </mat-card-subtitle>
       </mat-card-header>
       
@@ -128,25 +128,27 @@
               <h4>Attachments</h4>
               
               <!-- File Upload -->
-              <div class="file-upload">
-                <input 
-                  type="file" 
-                  (change)="onFileSelected($event)" 
-                  multiple 
-                  #fileInput 
-                  id="fileInput"
-                  style="display: none;">
-                <button 
-                  type="button" 
-                  mat-stroked-button 
-                  (click)="fileInput.click()">
-                  <mat-icon>attach_file</mat-icon>
-                  Choose Files
-                </button>
-              </div>
+              @if (!isFormDisabled) {
+                <div class="file-upload">
+                  <input 
+                    type="file" 
+                    (change)="onFileSelected($event)" 
+                    multiple 
+                    #fileInput 
+                    id="fileInput"
+                    style="display: none;">
+                  <button 
+                    type="button" 
+                    mat-stroked-button 
+                    (click)="fileInput.click()">
+                    <mat-icon>attach_file</mat-icon>
+                    Choose Files
+                  </button>
+                </div>
+              }
 
               <!-- Selected Files -->
-              @if (selectedFiles.length > 0) {
+              @if (selectedFiles.length > 0 && !isFormDisabled) {
                 <div class="selected-files">
                   <h5>New Attachments:</h5>
                   @for (file of selectedFiles; track $index) {
@@ -166,16 +168,26 @@
                 <div class="existing-attachments">
                   <h5>Existing Attachments:</h5>
                   @for (file of existingFiles; track file.fileName) {
-                    <mat-chip-row (removed)="removeExistingAttachment(file.fileName)">
-                      <mat-icon matChipAvatar>insert_drive_file</mat-icon>
-                      {{ file.fileName }}
-                      <button mat-icon-button (click)="downloadAttachment(file)" matTooltip="Download">
-                        <mat-icon>download</mat-icon>
-                      </button>
-                      <button matChipRemove>
-                        <mat-icon>cancel</mat-icon>
-                      </button>
-                    </mat-chip-row>
+                    @if (!isFormDisabled) {
+                      <mat-chip-row (removed)="removeExistingAttachment(file.fileName)">
+                        <mat-icon matChipAvatar>insert_drive_file</mat-icon>
+                        {{ file.fileName }}
+                        <button mat-icon-button (click)="downloadAttachment(file)" matTooltip="Download">
+                          <mat-icon>download</mat-icon>
+                        </button>
+                        <button matChipRemove>
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </mat-chip-row>
+                    } @else {
+                      <mat-chip-row>
+                        <mat-icon matChipAvatar>insert_drive_file</mat-icon>
+                        {{ file.fileName }}
+                        <button mat-icon-button (click)="downloadAttachment(file)" matTooltip="Download">
+                          <mat-icon>download</mat-icon>
+                        </button>
+                      </mat-chip-row>
+                    }
                   }
                 </div>
               }
@@ -211,13 +223,13 @@
               type="submit" 
               mat-raised-button 
               color="primary"
-              [disabled]="ticketForm.invalid || isLoading">
+              [disabled]="ticketForm.invalid || isLoading || isFormDisabled">
               @if (isLoading) {
                 <mat-spinner diameter="20"></mat-spinner>
               } @else {
                 <mat-icon>{{ isEditMode ? 'save' : 'send' }}</mat-icon>
               }
-              {{ isEditMode ? 'Update Ticket' : 'Submit Ticket' }}
+              {{ isFormDisabled ? 'View Only - Cannot Edit' : (isEditMode ? 'Update Ticket' : 'Submit Ticket') }}
             </button>
           </div>
         </form>

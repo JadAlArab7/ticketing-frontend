@@ -58,6 +58,7 @@ export class TicketFormComponent implements OnInit {
   isEditMode = false;
   ticketId: string | null = null;
   isLoading = false;
+  isFormDisabled = false; // Track if form should be disabled for receivers
   
   // Lookup data from resolver
   types: LookupDto[] = [];
@@ -130,6 +131,9 @@ export class TicketFormComponent implements OnInit {
   }
 
   loadTicketData(ticket: TicketResponseDto): void {
+    // Check if current user can edit this ticket
+    this.checkEditPermissions(ticket);
+    
     // Extract assignee from assignees array (backend sends array but count is always 1)
     const assigneeId = ticket.assignees && ticket.assignees.length > 0 
       ? ticket.assignees[0].departmentId 
@@ -144,10 +148,48 @@ export class TicketFormComponent implements OnInit {
       deadline: new Date(ticket.deadline)
     });
     
+    // In edit mode, disable the type field (cannot change type after submission)
+    this.ticketForm.get('type')?.disable();
+    
     // Enable assignee field if type is already selected in edit mode
     if (ticket.ticketTypeId) {
       this.ticketForm.get('assignee')?.enable();
     }
+    
+    // If user doesn't have edit permissions, disable the entire form
+    if (this.isFormDisabled) {
+      this.disableEntireForm();
+    }
+  }
+
+  // Check if current user can edit the ticket (only creator department can edit and only when ticket is Draft)
+  canEditTicket(ticket: TicketResponseDto): boolean {
+    if (!ticket || !this.currentUser) return false;
+    // Check if current user's department name matches the department that created the ticket
+    const isCreator = ticket.createdByDepartmentName === this.currentUser.departmentName;
+    // Check if ticket is in Draft status
+    const isDraft = ticket.ticketStatusName === 'Draft';
+    
+    return isCreator && isDraft;
+  }
+
+  // Check edit permissions and set form state
+  checkEditPermissions(ticket: TicketResponseDto): void {
+    if (!this.canEditTicket(ticket)) {
+      this.isFormDisabled = true;
+      this.snackBar.open(
+        'You can only view this ticket. Tickets can only be edited by the creator department when they are in Draft status.',
+        'Close',
+        { duration: 5000 }
+      );
+    }
+  }
+
+  // Disable the entire form for receivers
+  disableEntireForm(): void {
+    Object.keys(this.ticketForm.controls).forEach(key => {
+      this.ticketForm.get(key)?.disable();
+    });
   }
 
   onFileSelected(event: any): void {
@@ -232,6 +274,16 @@ export class TicketFormComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
+    // Prevent submission if form is disabled for receivers
+    if (this.isFormDisabled) {
+      this.snackBar.open(
+        'You cannot modify this ticket. Tickets can only be edited by the creator department when they are in Draft status.',
+        'Close',
+        { duration: 3000, panelClass: ['error-snackbar'] }
+      );
+      return;
+    }
+
     if (this.ticketForm.invalid) {
       this.snackBar.open('Please fill in all required fields correctly', 'Close', {
         duration: 3000,

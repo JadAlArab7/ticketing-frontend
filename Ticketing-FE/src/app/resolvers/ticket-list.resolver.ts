@@ -2,16 +2,16 @@ import { Injectable } from '@angular/core';
 import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { TicketService } from '../services/ticket.service';
-import { TicketResponseDto } from '../models/ticket.models';
+import { TicketListItemDto } from '../models/ticket.models';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TicketListResolver implements Resolve<TicketResponseDto[]> {
+export class TicketListResolver implements Resolve<TicketListItemDto[]> {
   
   constructor(private ticketService: TicketService) {}
   
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<TicketResponseDto[]> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<TicketListItemDto[]> {
     // Use real API call now
     return this.ticketService.getAllTickets();
     

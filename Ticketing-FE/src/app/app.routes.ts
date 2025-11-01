@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard } from './guards/auth.guard.js';
 import { TicketListResolver } from './resolvers/ticket-list.resolver.js';
 import { TicketFormResolver } from './resolvers/ticket-form.resolver.js';
+import { ticketViewResolver } from './ticket-view/ticket-view.resolver.js';
 
 export const routes: Routes = [
   {
@@ -27,6 +28,14 @@ export const routes: Routes = [
         loadComponent: () => import('./ticket-list/ticket-list.component.js').then(m => m.TicketListComponent),
         resolve: {
           tickets: TicketListResolver
+        }
+        // canActivate: [authGuard]
+      },
+      {
+        path: 'view/:id',
+        loadComponent: () => import('./ticket-view/ticket-view.component.js').then(m => m.TicketViewComponent),
+        resolve: {
+          ticket: ticketViewResolver
         }
         // canActivate: [authGuard]
       },

@@ -7,7 +7,8 @@ import {
   UpdateTicketDto, 
   TicketResponseDto, 
   LookupDto,
-  TicketFormResolverData 
+  TicketFormResolverData,
+  TicketListItemDto
 } from '../models/ticket.models';
 
 // Interface for user API responses
@@ -144,11 +145,21 @@ export class TicketService {
   }
 
   /**
+   * Update ticket status using the specific status update endpoint
+   * @param ticketId The ticket ID to update
+   * @param nextStatusId The next status ID to transition to
+   * @returns Observable of updated ticket
+   */
+  updateTicketStatus(ticketId: string, nextStatusId: string): Observable<TicketResponseDto> {
+    return this.http.put<TicketResponseDto>(`${this.API_BASE_URL}/Ticket/update-status/${ticketId}/${nextStatusId}`, {});
+  }
+
+  /**
    * Get all tickets (for list view)
    * @returns Observable of tickets array
    */
-  getAllTickets(): Observable<TicketResponseDto[]> {
-    return this.http.get<TicketResponseDto[]>(`${this.API_BASE_URL}/Ticket`);
+  getAllTickets(): Observable<TicketListItemDto[]> {
+    return this.http.get<TicketListItemDto[]>(`${this.API_BASE_URL}/Ticket`);
   }
 
   /**
